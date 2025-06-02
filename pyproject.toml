@@ -1,5 +1,5 @@
 [project]
-name = "airflow-deployment"
+name = "airflow-deploy"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
