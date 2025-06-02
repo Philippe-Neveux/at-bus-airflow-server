@@ -9,3 +9,9 @@ wheels/
 # Virtual environments
 .venv
 logs/
+
+.env
+
+.DS_Store
+
+.ruff_cache/

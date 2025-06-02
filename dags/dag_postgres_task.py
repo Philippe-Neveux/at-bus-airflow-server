@@ -1,6 +1,6 @@
 from airflow import DAG
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 default_args = {
     'owner': 'airflow',
