@@ -29,10 +29,10 @@ jobs:
 
       - name: Tag Docker image
         run: |
-          IMAGE_URI=${{ steps.login-ecr.outputs.registry }}:airflow_with_deps
+          IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/dev/airflow-images:airflow_with_deps
           docker tag airflow_with_deps:latest $IMAGE_URI
 
       - name: Push Docker image to ECR
         run: |
-          IMAGE_URI=${{ steps.login-ecr.outputs.registry }}:airflow_with_deps
+          IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/dev/airflow-images:airflow_with_deps
           docker push $IMAGE_URI
