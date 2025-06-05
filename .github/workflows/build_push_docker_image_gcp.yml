@@ -22,7 +22,7 @@ jobs:
 
       - name: Configure Docker for Artifact Registry
         run: |
-          gcloud auth configure-docker ${{ secrets.GCP_ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev
+          gcloud auth configure-docker ${{ vars.GCP_ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev
 
       - name: Build Docker image
         run: |
@@ -30,10 +30,10 @@ jobs:
 
       - name: Tag Docker image
         run: |
-          IMAGE_URI=${{ secrets.GCP_ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_ARTIFACT_REGISTRY_REPO }}/airflow_with_deps:latest
+          IMAGE_URI=${{ vars.GCP_ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY_REPO }}/airflow_with_deps:latest
           docker tag airflow_with_deps:latest $IMAGE_URI
 
       - name: Push Docker image to Artifact Registry
         run: |
-          IMAGE_URI=${{ secrets.GCP_ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_ARTIFACT_REGISTRY_REPO }}/airflow_with_deps:latest
+          IMAGE_URI=${{ vars.GCP_ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY_REPO }}/airflow_with_deps:latest
           docker push $IMAGE_URI
