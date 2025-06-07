@@ -22,8 +22,8 @@ jobs:
 
       - name: Remove existing DAGS on GCP VM
         run: |
-          gcloud compute ssh ${{ vars.GCP_VM_INSTANCE_NAME }} --zone ${{ vars.GCP_REGION }} -- "rm -rf  ~/airflow-deploy/dags/*"
+          gcloud compute ssh ${{ vars.GCP_VM_INSTANCE_NAME }} --zone ${{ vars.GCP_REGION_ZONE }} -- "rm -rf  ~/airflow-deploy/dags/*"
 
       - name: Copy DAGS to GCP VM
         run: |
-          gcloud compute scp --recurse dags/ ${{ vars.GCP_VM_INSTANCE_NAME }}:~/airflow-deploy/dags/ --zone ${{ vars.GCP_REGION }}
+          gcloud compute scp --recurse dags/ ${{ vars.GCP_VM_INSTANCE_NAME }}:~/airflow-deploy/dags/ --zone ${{ vars.GCP_REGION_ZONE }}
