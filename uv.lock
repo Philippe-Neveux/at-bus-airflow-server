@@ -157,7 +157,7 @@ wheels = [
 ]
 
 [[package]]
-name = "airflow-deployment"
+name = "airflow-deploy"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
