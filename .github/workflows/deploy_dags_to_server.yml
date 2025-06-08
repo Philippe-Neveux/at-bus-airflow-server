@@ -24,6 +24,10 @@ jobs:
         run: |
           gcloud compute ssh ${{ vars.GCP_VM_INSTANCE_NAME }} --zone ${{ vars.GCP_REGION_ZONE }} -- "sudo rm -rf  ~/airflow-deploy/dags/*"
 
+      - name: List DAGS directory after removal
+        run: |
+          gcloud compute ssh ${{ vars.GCP_VM_INSTANCE_NAME }} --zone ${{ vars.GCP_REGION_ZONE }} -- "ls -l ~/airflow-deploy/dags/"
+
       - name: Copy DAGS to GCP VM
         run: |
           gcloud compute scp --recurse dags/ ${{ vars.GCP_VM_INSTANCE_NAME }}:~/airflow-deploy/ --zone ${{ vars.GCP_REGION_ZONE }}
