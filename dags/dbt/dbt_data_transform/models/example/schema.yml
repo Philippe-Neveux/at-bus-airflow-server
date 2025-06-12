@@ -1,0 +1,35 @@
+
+version: 2
+
+models:
+  - name: personality_dataset_updated
+    description: "The dataset which comes from kaggle"
+    columns:
+      - name: Time_spent_Alone
+      - name: Stage_fear
+      - name: Social_event_attendance
+      - name: Going_outside
+      - name: Drained_after_socializing
+      - name: Friends_circle_size
+      - name: Post_frequency
+      - name: Personality
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Introvert', 'Extrovert']
+
+  - name: personality_dataset_gold
+    description: "The gold dataset, column are lower cased"
+    columns:
+      - name: ime_spent_alone
+      - name: stage_fear
+      - name: social_event_attendance
+      - name: going_outside
+      - name: drained_after_socializing
+      - name: friends_circle_size
+      - name: post_frequency
+      - name: personality
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Introvert', 'Extrovert']

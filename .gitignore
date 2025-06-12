@@ -18,3 +18,19 @@ logs/
 .vscode/
 
 init-server.sh
+
+# dbt
+
+# dbt
+target/
+dbt_packages/
+logs/
+
+# Mac OS
+.DS_Store
+
+# Data
+data/
+
+# Creds
+dbt-user-creds.json
