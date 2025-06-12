@@ -3,9 +3,9 @@ name = "airflow-deploy"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = "==3.11.*"
+requires-python = "==3.12.*"
 dependencies = [
-    "apache-airflow-providers-amazon[s3fs]>=9.8.0",
+    "apache-airflow==2.10.*",
     "astronomer-cosmos>=1.10.1",
     "dbt-bigquery>=1.9.2",
     "dbt-core>=1.9.8",
