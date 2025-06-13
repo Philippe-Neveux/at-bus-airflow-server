@@ -33,4 +33,4 @@ logs/
 data/
 
 # Creds
-dbt-user-creds.json
+credentials/

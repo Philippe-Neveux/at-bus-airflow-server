@@ -1,4 +1,4 @@
-FROM apache/airflow:2.10.5
+FROM apache/airflow:3.0.0
 
 ADD https://astral.sh/uv/0.7.9/install.sh /uv-installer.sh
 
