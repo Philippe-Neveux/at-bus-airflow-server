@@ -1,17 +1,12 @@
 from datetime import datetime, timedelta
 
-from airflow import DAG
-from airflow.operators.python import PythonOperator
+from airflow.decorators import task, dag
 from airflow.providers.google.cloud.hooks.gcs import GCSHook
 
 import polars as pl
 
-default_args = {
-    'owner': 'airflow',
-    'retries': 1,
-    'retry_delay': timedelta(minutes=1),
-}
 
+@task(task_id="load_csv_from_gcs")
 def load_csv_from_gcs():
     bucket_name = 'pne-open-data'
     file_path = 'personality_dataset.csv'
@@ -22,19 +17,14 @@ def load_csv_from_gcs():
     df = pl.read_csv(file_bytes)
     print(df)
 
-with DAG(
-    dag_id='GCS_load_csv_dag',
-    default_args=default_args,
+@dag(
     description='A simple example Airflow DAG',
     schedule='0 0 * * *',  # Runs weely at midnight
     start_date=datetime(2024, 1, 1),
     catchup=False,
-    tags=['gcp'],
-) as dag:
+    tags=['gcp']
+)
+def GCS_load_csv_dag():
+    load_csv_from_gcs()
 
-    load_csv_task = PythonOperator(
-        task_id='load_csv_from_gcs',
-        python_callable=load_csv_from_gcs,
-    )
-
-    load_csv_task
+GCS_load_csv_dag()

@@ -1,31 +1,20 @@
-from airflow import DAG
-from airflow.providers.standard.operators.python import PythonOperator
 from datetime import datetime, timedelta
 
-default_args = {
-    'owner': 'airflow',
-    'retries': 10,
-    'retry_delay': timedelta(minutes=5),
-}
+from airflow.decorators import task, dag
 
-with DAG(
-    dag_id='DAG_with_Python',
-    default_args=default_args,
-    description='A simple example Airflow DAG',
-    schedule='*/2 * * * *',  # Runs daily at midnight
+
+@task(task_id="print_hello")
+def python_callable() -> None:
+    print("Hello, Airflow!")
+
+@dag(
+    schedule='*/2 * * * *',
     start_date=datetime(2024, 1, 1),
     catchup=False,
-    tags=['example'],
-) as dag:
+    tags=["example"],
+)
+def DAG_with_Python():
 
-    task_hello = PythonOperator(
-        task_id='print_hello',
-        python_callable=lambda: print("Hello, Airflow!")
-    )
+    python_callable()
 
-    task_bye = PythonOperator(
-        task_id='print_bye',
-        python_callable=lambda: print("Goodbye, Airflow!")
-    )
-
-    task_hello >> task_bye
+DAG_with_Python()
