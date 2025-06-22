@@ -16,7 +16,10 @@ DOCKER_IMAGE_NAME=f"{GCP_REGION}-docker.pkg.dev/{GCP_PROJECT_ID}/{GCP_ARTIFACT_R
 @task.docker(
     task_id="at_bus_load_hello",
     image=DOCKER_IMAGE_NAME,
+    # image = f"{GCP_ARTIFACT_REPOSITORY}/at-bus-load:latest",
     entrypoint='uv run python_entrypoint',
+    mount_tmp_dir = False
+    # docker_conn_id='docker_gcp'
     # auto_remove="force"
 )
 def say_hello_in_docker_image() -> None:
@@ -25,7 +28,10 @@ def say_hello_in_docker_image() -> None:
 @task.docker(
     task_id="at_bus_load_gcs",
     image=DOCKER_IMAGE_NAME,
+    # image = f"{GCP_ARTIFACT_REPOSITORY}/at-bus-load:latest",
     entrypoint='uv run check_gcs',
+    mount_tmp_dir = False
+    # docker_conn_id='docker_gcp'
     # auto_remove="force"
 )
 def check_gcs() -> None:

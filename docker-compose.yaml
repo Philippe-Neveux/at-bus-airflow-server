@@ -66,7 +66,6 @@ x-airflow-common:
     GOOGLE_APPLICATION_CREDENTIALS: '/opt/airflow/credentials/airflow-server-key.json'
     # Airflow Conneections
     AIRFLOW_CONN_GOOGLE_CLOUD_DEFAULT: 'google-cloud-platform://'
-    AIRFLOW_CONN_DOCKER_DEFAULT: 'docker://${GCP_REGION}-docker.pkg.dev'
     # yamllint disable rule:line-length
     # Use simple http server on scheduler for health checks
     # See https://airflow.apache.org/docs/apache-airflow/stable/administration-and-deployment/logging-monitoring/check-health.html#scheduler-health-check-server
@@ -84,7 +83,8 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
     - ./credentials/airflow-server-key.json:/opt/airflow/credentials/airflow-server-key.json:ro
-    - /var/run/docker.sock:/var/run/docker.sock:rw
+    - /var/run/docker.sock:/var/run/docker.sock
+    # - '/tmp:/tmp'
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
