@@ -1,3 +1,0 @@
-[submodule "dags/dbt/dbt_data_transform"]
-	path = dags/dbt/dbt_data_transform
-	url = https://github.com/Philippe-Neveux/dbt_data_transform.git
