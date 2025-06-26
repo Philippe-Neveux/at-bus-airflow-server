@@ -64,27 +64,18 @@ x-airflow-common:
     GCP_PROJECT_ID: ${GCP_PROJECT_ID}
     GCP_DATASET_BIGQUERY: ${GCP_DATASET_BIGQUERY}
     GOOGLE_APPLICATION_CREDENTIALS: '/opt/airflow/credentials/airflow-server-key.json'
-    # Airflow Conneections
     AIRFLOW_CONN_GOOGLE_CLOUD_DEFAULT: 'google-cloud-platform://'
-    # yamllint disable rule:line-length
-    # Use simple http server on scheduler for health checks
-    # See https://airflow.apache.org/docs/apache-airflow/stable/administration-and-deployment/logging-monitoring/check-health.html#scheduler-health-check-server
-    # yamllint enable rule:line-length
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
-    # WARNING: Use _PIP_ADDITIONAL_REQUIREMENTS option ONLY for a quick checks
-    # for other purpose (development, test and especially production usage) build/extend Airflow image.
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
-    # The following line can be used to set a custom config file, stored in the local config folder
-    # If you want to use it, outcomment it and replace airflow.cfg with the name of your config file
     AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
   volumes:
     - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
-    - ./credentials/airflow-server-key.json:/opt/airflow/credentials/airflow-server-key.json:ro
+    - ${AIRFLOW_PROJ_DIR:-.}/credentials/airflow-server-key.json:/opt/airflow/credentials/airflow-server-key.json:ro
     - /var/run/docker.sock:/var/run/docker.sock
-    # - '/tmp:/tmp'
+    - ~/.docker/config.json:/home/airflow/.docker/config.json
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
@@ -110,8 +101,6 @@ services:
     restart: always
 
   redis:
-    # Redis is limited to 7.2-bookworm due to licencing change
-    # https://redis.io/blog/redis-adopts-dual-source-available-licensing/
     image: redis:7.2-bookworm
     expose:
       - 6379
@@ -159,7 +148,6 @@ services:
     <<: *airflow-common
     command: celery worker
     healthcheck:
-      # yamllint disable rule:line-length
       test:
         - "CMD-SHELL"
         - 'celery --app airflow.providers.celery.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}" || celery --app airflow.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}"'
@@ -196,7 +184,6 @@ services:
   airflow-init:
     <<: *airflow-common
     entrypoint: /bin/bash
-    # yamllint disable rule:line-length
     mem_limit: 8g
     command:
       - -c
@@ -271,6 +258,18 @@ services:
       - -c
       - airflow
 
+  # docker-socket-proxy:
+  #   image: tecnativa/docker-socket-proxy:0.1.2
+  #   environment:
+  #     CONTAINERS: 1
+  #     IMAGES: 1
+  #     AUTH: 1
+  #     POST: 1
+  #   privileged: true
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #   restart: always
+
   # You can enable flower by adding "--profile flower" option e.g. docker-compose --profile flower up
   # or by explicitly targeted on the command line e.g. docker-compose up flower.
   # See: https://docs.docker.com/compose/profiles/
@@ -292,6 +291,7 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+
 
 volumes:
   postgres-db-volume:
