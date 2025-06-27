@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 from airflow.decorators import task, dag
 from airflow.providers.docker.operators.docker import DockerOperator
+from cosmos import DbtTaskGroup, ProjectConfig, ProfileConfig, ExecutionConfig
 import google.auth
 import google.auth.transport.requests
 
@@ -55,6 +56,21 @@ def DAG_at_bus_load():
         environment={"GCP_TOKEN": token}
     )
 
-    get_at_api_data >> move_gcs_data_to_bq
+    profile_config = ProfileConfig(
+        profile_name="dbt_at_bus_transform",
+        target_name="dev",
+        profiles_yml_filepath="/opt/airflow/dags/dbt/dbt-at-bus-transform/profiles.yml"
+    )
+    project_config = ProjectConfig(
+        dbt_project_path="/opt/airflow/dags/dbt/dbt-at-bus-transform",
+    )
+
+    transform_bq_data = DbtTaskGroup(
+        group_id="dbt_at_bus_transform",
+        project_config=project_config,
+        profile_config=profile_config,
+    )
+
+    get_at_api_data >> move_gcs_data_to_bq >> transform_bq_data
 
 DAG_at_bus_load()
