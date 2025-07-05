@@ -1,0 +1,11 @@
+---
+# Production Inventory
+# This file is dynamically updated by GitHub Actions workflow
+# For local development, update these values manually
+all:
+  children:
+    airflow_servers:
+      hosts:
+        airflow-prod:
+          ansible_host: 34.40.187.245
+          ansible_user: at-bus-infrastructure

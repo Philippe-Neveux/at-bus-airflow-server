@@ -1,0 +1,25 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# dbt
+target/
+dbt_packages/
+logs/
+
+# Mac OS
+.DS_Store
+
+# Data
+data/
+
+# Creds
+dbt-user-creds.json
+.vscode/

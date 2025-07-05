@@ -1,0 +1,33 @@
+---
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Create Nginx configuration for Airflow
+  template:
+    src: airflow.conf.j2
+    dest: /etc/nginx/sites-available/airflow
+    mode: '0644'
+  notify: reload nginx
+
+- name: Enable Airflow site
+  file:
+    src: /etc/nginx/sites-available/airflow
+    dest: /etc/nginx/sites-enabled/airflow
+    state: link
+  notify: reload nginx
+
+- name: Remove default Nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: reload nginx
+
+- name: Start and enable Nginx
+  systemd:
+    name: nginx
+    state: started
+    enabled: yes 

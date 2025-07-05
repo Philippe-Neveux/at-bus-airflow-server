@@ -1,0 +1,158 @@
+version: 2
+
+models:
+  - name: stops_consolidated
+    description: "Dynamically consolidated stops data from all stops_* tables"
+    columns:
+      - name: type
+        description: "Type of the stop"
+        type: string
+        tests:
+          - not_null
+      
+      - name: id
+        description: "Unique identifier for the stop"
+        type: string
+        tests:
+          - not_null
+      
+      - name: location_type
+        description: "Type of location"
+        type: integer
+      
+      - name: parent_station
+        description: "Reference to parent station if this is a stop within a station"
+        type: string
+      
+      - name: platform_code
+        description: "Platform identifier for the stop"
+        type: string
+      
+      - name: stop_code
+        description: "Short text or number that identifies the location for riders"
+        type: string
+      
+      - name: stop_id
+        description: "Unique identifier for the stop"
+        type: string
+        tests:
+          - not_null
+      
+      - name: stop_lat
+        description: "Latitude of the stop location"
+        type: float
+      
+      - name: stop_lon
+        description: "Longitude of the stop location"
+        type: float
+      
+      - name: stop_name
+        description: "Name of the stop"
+        type: string
+        tests:
+          - not_null
+      
+      - name: wheelchair_boarding
+        description: "Indicates whether wheelchair boarding is possible (0=no info, 1=some vehicles, 2=no wheelchair boarding)"
+        type: integer
+      
+      - name: api_date_ingestion
+        description: "Date when the data was ingested from the API"
+        type: date
+      
+      - name: source_table
+        description: "Original table name where this record came from"
+        type: string
+        tests:
+          - not_null
+      
+      - name: consolidated_at
+        description: "Timestamp when this record was consolidated"
+        type: timestamp
+        tests:
+          - not_null
+  
+  - name: trips_consolidated
+    description: "Dynamically consolidated trips data from all trips_* tables"
+    columns:
+      - name: type
+        description: "Type of the trip record"
+        type: string
+      
+      - name: id
+        description: "Unique identifier for the trip record"
+        type: string
+        tests:
+          - not_null
+      
+      - name: arrival_time
+        description: "Scheduled arrival time at the stop"
+        type: string
+      
+      - name: departure_time
+        description: "Scheduled departure time from the stop"
+        type: string
+      
+      - name: direction_id
+        description: "Direction identifier for the trip (0=outbound, 1=inbound)"
+        type: integer
+      
+      - name: drop_off_type
+        description: "Type of drop-off service available at the stop"
+        type: integer
+      
+      - name: pickup_type
+        description: "Type of pickup service available at the stop"
+        type: integer
+      
+      - name: route_id
+        description: "Identifier for the route"
+        type: string
+      
+      - name: service_date
+        description: "Date when the service is provided"
+        type: string
+      
+      - name: shape_id
+        description: "Identifier for the shape/geometry of the route"
+        type: string
+      
+      - name: stop_headsign
+        description: "Text that appears on signage identifying the destination"
+        type: string
+      
+      - name: stop_id
+        description: "Identifier for the stop"
+        type: string
+      
+      - name: stop_sequence
+        description: "Order of stops within the trip"
+        type: integer
+      
+      - name: trip_headsign
+        description: "Text that appears on signage identifying the trip destination"
+        type: string
+      
+      - name: trip_id
+        description: "Unique identifier for the trip"
+        type: string
+      
+      - name: trip_start_time
+        description: "Start time of the trip"
+        type: string
+      
+      - name: api_date_ingestion
+        description: "Date when the data was ingested from the API"
+        type: date
+      
+      - name: source_table
+        description: "Original table name where this record came from"
+        type: string
+        tests:
+          - not_null
+      
+      - name: consolidated_at
+        description: "Timestamp when this record was consolidated"
+        type: timestamp
+        tests:
+          - not_null

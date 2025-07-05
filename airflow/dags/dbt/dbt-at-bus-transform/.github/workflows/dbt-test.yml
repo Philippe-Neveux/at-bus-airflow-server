@@ -1,0 +1,35 @@
+name: DBT Test
+
+on:
+  push:
+    branches: [ run-dbt-test ]
+
+jobs:
+  dbt-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: GCP auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.7.12"
+
+      - name: Install dependencies
+        run: |
+          uv sync
+          uv venv
+
+      - name: Test dbt project
+        run: |
+          uv run dbt build --profiles-dir ./
+        env:
+          GCP_DATASET_BIGQUERY: ${{ secrets.GCP_DATASET_BIGQUERY }}
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}

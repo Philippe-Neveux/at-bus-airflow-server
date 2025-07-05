@@ -1,0 +1,12 @@
+---
+- name: restart docker
+  systemd:
+    name: docker
+    state: restarted
+
+- name: ensure docker.sock permissions after restart
+  file:
+    path: /var/run/docker.sock
+    mode: '0666'
+    state: file
+  when: ansible_os_family == "Debian" 

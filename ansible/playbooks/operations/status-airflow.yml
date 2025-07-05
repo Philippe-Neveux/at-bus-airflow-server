@@ -1,0 +1,57 @@
+---
+- name: Check Airflow Services Status
+  hosts: airflow_servers
+  become: yes
+  gather_facts: no
+
+  tasks:
+    - name: Check Airflow systemd service status
+      systemd:
+        name: airflow
+      register: service_status
+
+    - name: Display systemd service status
+      debug:
+        msg: |
+          Airflow systemd service: {{ service_status.status.ActiveState }}
+          Service enabled: {{ service_status.status.UnitFileState }}
+
+    - name: Check Docker Compose containers status
+      shell: |
+        cd {{ airflow_project_dir }} && docker compose ps
+      become: yes
+      become_user: airflow
+      register: container_status
+      ignore_errors: yes
+
+    - name: Display container status
+      debug:
+        var: container_status.stdout_lines
+      when: container_status.rc == 0
+    
+    - name: Check airflow containers logs
+      shell: |
+        cd {{ airflow_project_dir }} && docker compose logs
+      become: yes
+      become_user: airflow
+      register: airlfow_logs
+      ignore_errors: yes
+    
+    - name: Display airflow containers logs
+      debug:
+        var: airlfow_logs.stdout_lines
+      when: airlfow_logs.rc == 0
+
+
+    - name: Check Airflow webserver health
+      uri:
+        url: http://localhost:8080/health
+        method: GET
+        status_code: 200
+      register: webserver_health
+      ignore_errors: yes
+
+    - name: Display webserver health
+      debug:
+        msg: "Airflow webserver is {{ 'healthy' if webserver_health.status == 200 else 'not responding' }}"
+      when: webserver_health.status is defined 

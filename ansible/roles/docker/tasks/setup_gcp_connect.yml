@@ -1,0 +1,40 @@
+---
+- name: Ensure airflow user is in docker group
+  user:
+    name: airflow
+    groups: docker
+    append: yes
+
+- name: Configure Docker authentication with Google Cloud Artifact Registry
+  shell: |
+    gcloud auth configure-docker {{ gcp_region }}-docker.pkg.dev --quiet
+  become: yes
+  become_user: airflow
+  environment:
+    GOOGLE_APPLICATION_CREDENTIALS: "{{ airflow_project_dir }}/credentials/airflow-server-key.json"
+  register: docker_auth_result
+  changed_when: docker_auth_result.rc == 0
+
+- name: Ensure Docker config directory exists
+  file:
+    path: /home/airflow/.docker
+    state: directory
+    owner: airflow
+    group: airflow
+    mode: '0700'
+
+- name: Create Docker config directory and file
+  file:
+    path: /home/airflow/.docker
+    state: directory
+    owner: airflow
+    group: airflow
+    mode: '0700'
+
+- name: Create basic Docker config
+  template:
+    src: docker-config.json.j2
+    dest: /home/airflow/.docker/config.json
+    owner: airflow
+    group: airflow
+    mode: '0600'

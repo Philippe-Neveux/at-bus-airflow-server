@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Airflow monitoring script
+LOG_FILE="/var/log/airflow-monitor.log"
+AIRFLOW_DIR="{{ airflow_project_dir }}"
+
+# Function to get the correct docker compose command
+get_docker_compose_cmd() {
+    if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
+        echo "docker compose"
+    else
+        echo "docker-compose"
+    fi
+}
+
+# Check if Airflow containers are running
+check_containers() {
+    cd $AIRFLOW_DIR
+    DOCKER_COMPOSE_CMD=$(get_docker_compose_cmd)
+    
+    if ! $DOCKER_COMPOSE_CMD ps | grep -q "Up"; then
+        echo "$(date): Airflow containers are not running!" >> $LOG_FILE
+        # Attempt to restart
+        $DOCKER_COMPOSE_CMD down
+        $DOCKER_COMPOSE_CMD up -d
+        echo "$(date): Attempted to restart Airflow containers" >> $LOG_FILE
+    fi
+}
+
+# Check disk space
+check_disk_space() {
+    DISK_USAGE=$(df / | awk 'NR==2 {print $5}' | sed 's/%//')
+    if [ $DISK_USAGE -gt 80 ]; then
+        echo "$(date): Disk usage is high: ${DISK_USAGE}%" >> $LOG_FILE
+    fi
+}
+
+# Check memory usage
+check_memory() {
+    MEMORY_USAGE=$(free | awk 'NR==2{printf "%.2f", $3*100/$2}')
+    if (( $(echo "$MEMORY_USAGE > 80" | bc -l) )); then
+        echo "$(date): Memory usage is high: ${MEMORY_USAGE}%" >> $LOG_FILE
+    fi
+}
+
+# Main execution
+check_containers
+check_disk_space
+check_memory 

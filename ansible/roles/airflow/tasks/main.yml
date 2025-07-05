@@ -1,0 +1,111 @@
+---
+- name: Copy docker-compose file
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ airflow_project_dir }}/docker-compose.yml"
+    owner: airflow
+    group: airflow
+    mode: '0644'
+
+- name: Synchronize DAGs directory
+  synchronize:
+    src: "{{ playbook_dir }}/../../../airflow/dags/"
+    dest: "{{ airflow_project_dir }}/dags/"
+    delete: yes
+    recursive: yes
+    owner: yes
+    group: yes
+  tags: files
+
+- name: Synchronize config directory
+  synchronize:
+    src: "{{ playbook_dir }}/../../../airflow/config/"
+    dest: "{{ airflow_project_dir }}/config/"
+    delete: yes
+    recursive: yes
+    owner: yes
+    group: yes
+  tags: files
+
+- name: Synchronize Airflow configuration
+  synchronize:
+    src: "{{ playbook_dir }}/../../../airflow/config/"
+    dest: "{{ airflow_project_dir }}/config/"
+    delete: yes
+    recursive: yes
+    owner: yes
+    group: yes
+  tags: files
+
+- name: Create .env file
+  template:
+    src: ../../templates/environment.j2
+    dest: "{{ airflow_project_dir }}/.env"
+    owner: airflow
+    group: airflow
+    mode: '0644'
+
+- name: Set correct permissions for airflow directories
+  file:
+    path: "{{ item }}"
+    owner: airflow
+    group: airflow
+    recurse: yes
+  loop:
+    - "{{ airflow_project_dir }}/dags"
+    - "{{ airflow_project_dir }}/plugins"
+
+- name: Ensure credentials directory exists
+  file:
+    path: "{{ airflow_project_dir }}/credentials"
+    state: directory
+    owner: airflow
+    group: airflow
+    mode: '0700'
+
+- name: Clean existing credentials (except service account key)
+  find:
+    paths: "{{ airflow_project_dir }}/credentials"
+    excludes: "airflow-server-key.json"
+  register: existing_credentials
+
+- name: Remove old credential files
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ existing_credentials.files }}"
+
+- name: Copy Google Cloud service account key
+  copy:
+    src: "{{ playbook_dir }}/../../../ansible/files/credentials/airflow-server-key.json"
+    dest: "{{ airflow_project_dir }}/credentials/airflow-server-key.json"
+    owner: airflow
+    group: airflow
+    mode: '0600'
+
+- name: Connect docker to GCP Artififact repository
+  include_role:
+    name: docker
+    tasks_from: setup_gcp_connect
+
+- name: Test Docker image pull for Airflow base image
+  shell: |
+    docker pull {{ gcp_region }}-docker.pkg.dev/{{ gcp_project_id }}/airflow-images/{{ image_name }}:latest
+  become: yes
+  become_user: airflow
+  register: docker_pull_result
+  changed_when: docker_pull_result.rc == 0
+
+- name: Create systemd service for Airflow
+  template:
+    src: airflow.service.j2
+    dest: /etc/systemd/system/airflow.service
+    mode: '0644'
+  notify: reload systemd
+
+- name: Enable and start Airflow service
+  systemd:
+    name: airflow
+    state: started
+    enabled: yes
+    daemon_reload: yes 

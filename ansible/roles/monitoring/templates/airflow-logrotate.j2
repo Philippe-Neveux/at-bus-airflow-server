@@ -1,0 +1,12 @@
+{{ airflow_project_dir }}/logs/*.log {
+    daily
+    missingok
+    rotate 30
+    compress
+    delaycompress
+    notifempty
+    create 644 airflow airflow
+    postrotate
+        systemctl reload airflow
+    endscript
+} 

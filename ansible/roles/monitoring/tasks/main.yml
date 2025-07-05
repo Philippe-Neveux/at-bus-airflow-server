@@ -1,0 +1,44 @@
+---
+- name: Install monitoring packages
+  apt:
+    name:
+      - htop
+      - iotop
+      - nethogs
+      - logrotate
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Create logrotate configuration for Airflow
+  template:
+    src: airflow-logrotate.j2
+    dest: /etc/logrotate.d/airflow
+    mode: '0644'
+
+- name: Create monitoring script
+  template:
+    src: monitor-airflow.sh.j2
+    dest: /usr/local/bin/monitor-airflow.sh
+    mode: '0755'
+
+- name: Create systemd timer for monitoring
+  template:
+    src: airflow-monitor.timer.j2
+    dest: /etc/systemd/system/airflow-monitor.timer
+    mode: '0644'
+  notify: reload systemd
+
+- name: Create systemd service for monitoring
+  template:
+    src: airflow-monitor.service.j2
+    dest: /etc/systemd/system/airflow-monitor.service
+    mode: '0644'
+  notify: reload systemd
+
+- name: Enable and start monitoring timer
+  systemd:
+    name: airflow-monitor.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes 

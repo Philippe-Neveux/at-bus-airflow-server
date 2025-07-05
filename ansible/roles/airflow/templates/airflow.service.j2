@@ -1,0 +1,23 @@
+[Unit]
+Description=Airflow Docker Compose
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory={{ airflow_project_dir }}
+User=airflow
+Group=airflow
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+EnvironmentFile={{ airflow_project_dir }}/.env
+Environment=GOOGLE_APPLICATION_CREDENTIALS={{ airflow_project_dir }}/credentials/airflow-server-key.json
+# Try docker compose first (newer versions), fallback to docker-compose
+ExecStart=/bin/bash -c 'if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then docker compose up -d; else /usr/local/bin/docker-compose up -d; fi' >> /var/log/airflow-systemd.log 2>&1
+ExecStop=/bin/bash -c 'if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then docker compose down; else /usr/local/bin/docker-compose down; fi' >> /var/log/airflow-systemd.log 2>&1
+TimeoutStartSec=300
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target 

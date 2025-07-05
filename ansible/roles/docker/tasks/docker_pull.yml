@@ -1,0 +1,36 @@
+---
+- name: Pull Docker image as airflow user
+  shell: |
+    docker pull "{{ docker_image_name }}"
+  become: yes
+  become_user: airflow
+  register: docker_pull_result
+  changed_when: docker_pull_result.rc == 0
+  failed_when: false
+
+- name: Check if either pull attempt was successful
+  set_fact:
+    pull_successful: "{{ docker_pull_result.rc == 0 or (docker_pull_fallback_result is defined and docker_pull_fallback_result.rc == 0) }}"
+
+- name: Display pull result
+  debug:
+    msg: "Successfully pulled Docker image: {{ docker_image_name }}"
+  when: pull_successful
+
+- name: Display image already exists message
+  debug:
+    msg: "Docker image {{ docker_image_name }} already exists locally"
+  when: not docker_pull_result.changed and not (docker_pull_fallback_result is defined and docker_pull_fallback_result.changed)
+
+- name: Display pull failure message
+  debug:
+    msg: |
+      Failed to pull Docker image: {{ docker_image_name }}
+      Platform-specific error: {{ docker_pull_result.stderr if docker_pull_result.stderr else 'No error details' }}
+      Fallback error: {{ docker_pull_fallback_result.stderr if docker_pull_fallback_result is defined and docker_pull_fallback_result.stderr else 'No fallback attempted' }}
+  when: not pull_successful
+
+- name: Fail if pull was unsuccessful
+  fail:
+    msg: "Failed to pull Docker image {{ docker_image_name }}. Check the error messages above for details."
+  when: not pull_successful

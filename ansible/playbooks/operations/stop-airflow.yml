@@ -1,0 +1,48 @@
+---
+- name: Stop Airflow Services
+  hosts: airflow_servers
+  become: yes
+  gather_facts: no
+
+  tasks:
+    - name: Stop Airflow systemd service
+      systemd:
+        name: airflow
+        state: stopped
+        daemon_reload: yes
+      register: stop_result
+
+    - name: Display stop result
+      debug:
+        msg: "Airflow systemd service stopped successfully"
+      when: stop_result.changed
+
+    - name: Force stop all Airflow containers
+      shell: |
+        cd {{ airflow_project_dir }} && docker compose down --remove-orphans
+      become: yes
+      become_user: airflow
+      register: force_stop_result
+
+    - name: Display force stop result
+      debug:
+        msg: "All Airflow containers stopped successfully"
+      when: force_stop_result.changed
+
+    - name: Verify all containers are stopped
+      shell: |
+        cd {{ airflow_project_dir }} && docker compose ps
+      become: yes
+      become_user: airflow
+      register: final_status
+      ignore_errors: yes
+
+    - name: Display final container status
+      debug:
+        var: final_status.stdout_lines
+      when: final_status.rc == 0
+
+    - name: Confirm all containers stopped
+      debug:
+        msg: "All Airflow services have been stopped successfully"
+      when: final_status.stdout is defined and 'Up' not in final_status.stdout 

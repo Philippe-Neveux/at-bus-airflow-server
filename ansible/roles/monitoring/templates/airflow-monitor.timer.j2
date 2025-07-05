@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Airflow monitoring every 5 minutes
+Requires=airflow-monitor.service
+
+[Timer]
+Unit=airflow-monitor.service
+OnCalendar=*:0/5
+Persistent=true
+
+[Install]
+WantedBy=timers.target 

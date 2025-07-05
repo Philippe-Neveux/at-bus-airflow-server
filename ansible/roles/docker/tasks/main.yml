@@ -1,0 +1,70 @@
+---
+- name: Add Docker GPG key
+  apt_key:
+    url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Add Docker repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
+    state: present
+    filename: docker
+  when: ansible_os_family == "Debian"
+
+- name: Install Docker packages
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Start and enable Docker service
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+
+# Note: airflow user is already created with docker group in common role
+
+- name: Set docker.sock permissions to 666
+  file:
+    path: /var/run/docker.sock
+    mode: '0666'
+    state: file
+  when: ansible_os_family == "Debian"
+
+- name: Configure Docker daemon
+  template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+    mode: '0644'
+  register: docker_daemon_config
+  notify: restart docker
+
+- name: Restart Docker service to apply new configuration
+  systemd:
+    name: docker
+    state: restarted
+    daemon_reload: yes
+  when: docker_daemon_config.changed
+  notify: ensure docker.sock permissions after restart
+
+- name: Create docker-compose directory
+  file:
+    path: /usr/local/bin
+    state: directory
+    mode: '0755'
+
+- name: Download docker-compose
+  get_url:
+    url: https://github.com/docker/compose/releases/latest/download/docker-compose-Linux-x86_64
+    dest: /usr/local/bin/docker-compose
+    mode: '0755'
+    owner: root
+    group: root 

@@ -1,0 +1,21 @@
+name: Trigger dags update from airflow-server repository
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  trigger-airflow-update:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Trigger repository dispatch
+      uses: convictional/trigger-workflow-and-wait@v1.6.5
+      with:
+        owner: ${{ vars.AIRFLOW_REPOSITORY_OWNER }}
+        repo: ${{ vars.AIRFLOW_REPOSITORY }}
+        github_token: ${{ secrets.GH_TOKEN }}
+        workflow_file_name: ${{ vars.WORKFLOW_TRIGGERED_DEPLOY_DAGS }}

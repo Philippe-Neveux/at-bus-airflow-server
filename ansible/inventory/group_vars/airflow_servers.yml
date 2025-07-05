@@ -1,0 +1,15 @@
+---
+# Airflow Server Configuration
+airflow_version: "2.10.5"
+airflow_uid: 50000
+airflow_project_dir: /opt/airflow
+gcp_project_id: glossy-apex-462002-i3
+gcp_region: australia-southeast1
+image_name: airflow_with_deps
+airflow_admin_username: airflow
+airflow_admin_password: airflow
+airflow_webserver_port: 8080
+airflow_flower_port: 5555
+
+# Deployment Configuration
+clean_deployment: true  # Set to true to remove existing files before copying new ones
