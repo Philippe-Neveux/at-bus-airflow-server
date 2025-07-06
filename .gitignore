@@ -33,6 +33,6 @@ logs/
 data/
 
 # Creds
-credentials/
+ansible/files/credentials/airflow-server-key.json
 
 scripts/
