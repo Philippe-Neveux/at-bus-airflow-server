@@ -247,7 +247,7 @@ jobs:
       run: |
         cd ansible
         make check-syntax-playbooks
-        make docker-pull IMAGE=${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/python-projects/${{ github.event.inputs.docker_image_name }}
+        make docker-pull IMAGE=${{ vars.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/python-projects/${{ github.event.inputs.docker_image_name }}
 
 
     - name: Verify Deployment
