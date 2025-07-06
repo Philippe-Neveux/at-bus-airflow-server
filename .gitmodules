@@ -1,3 +1,0 @@
-[submodule "airflow/dags/dbt/dbt-at-bus-transform"]
-	path = airflow/dags/dbt/dbt-at-bus-transform
-	url = https://github.com/Philippe-Neveux/dbt-at-bus-transform.git
