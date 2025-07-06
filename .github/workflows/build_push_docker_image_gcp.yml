@@ -2,7 +2,7 @@ name: Build and Push Docker image to GCPArtifact Registry
 
 on:
   push:
-    branches: [ main ]
+    branches: [ build-push-docker-image ]
 
 jobs:
   build-and-push:
@@ -26,6 +26,7 @@ jobs:
 
       - name: Build Docker image
         run: |
+          cd airflow
           docker build -t airflow_with_deps:latest .
 
       - name: Tag Docker image

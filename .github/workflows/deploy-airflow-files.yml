@@ -86,8 +86,8 @@ jobs:
     - name: Check VM Status
       id: check-vm-status
       run: |
-        VM_STATUS=$(gcloud compute instances describe ${{ secrets.GCP_VM_NAME }} \
-          --zone=${{ secrets.GCP_ZONE }} \
+        VM_STATUS=$(gcloud compute instances describe ${{ vars.GCP_VM_INSTANCE_NAME }} \
+          --zone=${{ vars.GCP_REGION_ZONE }} \
           --format="value(status)")
         echo "vm_status=$VM_STATUS" >> $GITHUB_OUTPUT
         echo "Current VM status: $VM_STATUS"
@@ -96,14 +96,14 @@ jobs:
       if: steps.check-vm-status.outputs.vm_status == 'TERMINATED'
       run: |
         echo "Starting VM..."
-        gcloud compute instances start ${{ secrets.GCP_VM_NAME }} \
-          --zone=${{ secrets.GCP_ZONE }}
+        gcloud compute instances start ${{ vars.GCP_VM_INSTANCE_NAME }} \
+          --zone=${{ vars.GCP_REGION_ZONE }}
         
         echo "Waiting for VM to be ready..."
         # Wait for the instance to be running
         for i in {1..30}; do
-          VM_STATUS=$(gcloud compute instances describe ${{ secrets.GCP_VM_NAME }} \
-            --zone=${{ secrets.GCP_ZONE }} \
+          VM_STATUS=$(gcloud compute instances describe ${{ vars.GCP_VM_INSTANCE_NAME }} \
+            --zone=${{ vars.GCP_REGION_ZONE }} \
             --format="value(status)")
           if [[ "$VM_STATUS" == "RUNNING" ]]; then
             echo "VM is now running"
@@ -150,37 +150,37 @@ jobs:
     - name: Generate SSH Key Pair
       run: |
         mkdir -p ~/.ssh
-        ssh-keygen -t rsa -b 4096 -f ~/.ssh/at-bus-infrastructure-key -N "" -C "github-actions@deployment"
-        chmod 600 ~/.ssh/at-bus-infrastructure-key
-        chmod 644 ~/.ssh/at-bus-infrastructure-key.pub
+        ssh-keygen -t rsa -b 4096 -f ~/.ssh/at-bus-airflow-server-key -N "" -C "github-actions@deployment"
+        chmod 600 ~/.ssh/at-bus-airflow-server-key
+        chmod 644 ~/.ssh/at-bus-airflow-server-key.pub
         echo "SSH key pair generated successfully"
 
     - name: Get VM IP
       id: get-vm-ip
       run: |
-        VM_IP=$(gcloud compute instances describe ${{ secrets.GCP_VM_NAME }} \
-          --zone=${{ secrets.GCP_ZONE }} \
+        VM_IP=$(gcloud compute instances describe ${{ vars.GCP_VM_INSTANCE_NAME }} \
+          --zone=${{ vars.GCP_REGION_ZONE }} \
           --format="value(networkInterfaces[0].accessConfigs[0].natIP)")
         echo "vm_ip=$VM_IP" >> $GITHUB_OUTPUT
         echo "VM IP: $VM_IP"
 
     - name: Add SSH Key to VM
       run: |
-        gcloud compute instances add-metadata ${{ secrets.GCP_VM_NAME }} \
-          --zone=${{ secrets.GCP_ZONE }} \
-          --metadata ssh-keys="${{ vars.GCP_SSH_USER }}:$(cat ~/.ssh/at-bus-infrastructure-key.pub)"
+        gcloud compute instances add-metadata ${{ vars.GCP_VM_INSTANCE_NAME }} \
+          --zone=${{ vars.GCP_REGION_ZONE }} \
+          --metadata ssh-keys="${{ vars.GCP_SSH_USER }}:$(cat ~/.ssh/at-bus-airflow-server-key.pub)"
 
     - name: Wait for SSH to be ready
       run: |
         echo "Testing SSH connection with generated key..."
-        echo "SSH key location: ~/.ssh/at-bus-infrastructure-key"
-        echo "SSH key permissions: $(ls -la ~/.ssh/at-bus-infrastructure-key)"
+        echo "SSH key location: ~/.ssh/at-bus-airflow-server-key"
+        echo "SSH key permissions: $(ls -la ~/.ssh/at-bus-airflow-server-key)"
         echo "SSH public key:"
-        cat ~/.ssh/at-bus-infrastructure-key.pub
+        cat ~/.ssh/at-bus-airflow-server-key.pub
         
         for i in {1..30}; do
           echo "Attempt $i: Testing SSH connection to ${{ vars.GCP_SSH_USER }}@${{ steps.get-vm-ip.outputs.vm_ip }}"
-          if ssh -i ~/.ssh/at-bus-infrastructure-key -o StrictHostKeyChecking=no -o ConnectTimeout=10 -o UserKnownHostsFile=/dev/null \
+          if ssh -i ~/.ssh/at-bus-airflow-server-key -o StrictHostKeyChecking=no -o ConnectTimeout=10 -o UserKnownHostsFile=/dev/null \
              ${{ vars.GCP_SSH_USER }}@${{ steps.get-vm-ip.outputs.vm_ip }} "echo 'SSH ready'"; then
             echo "SSH connection established on attempt $i"
             break
@@ -189,7 +189,7 @@ jobs:
           if [ $i -eq 30 ]; then
             echo "Failed to establish SSH connection after 30 attempts"
             echo "Checking VM status..."
-            gcloud compute instances describe ${{ secrets.GCP_VM_NAME }} --zone=${{ secrets.GCP_ZONE }}
+            gcloud compute instances describe ${{ vars.GCP_VM_INSTANCE_NAME }} --zone=${{ vars.GCP_REGION_ZONE }}
             exit 1
           fi
           sleep 10
@@ -219,7 +219,7 @@ jobs:
         airflow_uid: 50000
         airflow_project_dir: /opt/airflow
         gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
-        gcp_region: ${{ secrets.GCP_REGION }}
+        gcp_region: ${{ vars.GCP_REGION }}
         image_name: ${{ vars.AIRFLOW_IMAGE_NAME }}
         airflow_admin_username: ${{ secrets.AIRFLOW_ADMIN_USERNAME }}
         airflow_admin_password: ${{ secrets.AIRFLOW_ADMIN_PASSWORD }}
@@ -233,7 +233,7 @@ jobs:
         cat > ansible/inventory/group_vars/all.yml << EOF
         ---
         # Global SSH Configuration for all hosts
-        ansible_ssh_private_key_file: ~/.ssh/at-bus-infrastructure-key
+        ansible_ssh_private_key_file: ~/.ssh/at-bus-airflow-server-key
         ansible_python_interpreter: /usr/bin/python3
         ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
         EOF
@@ -250,15 +250,15 @@ jobs:
 
     - name: Verify Deployment
       run: |
-        ssh -i ~/.ssh/at-bus-infrastructure-key -o StrictHostKeyChecking=no \
+        ssh -i ~/.ssh/at-bus-airflow-server-key -o StrictHostKeyChecking=no \
           ${{ vars.GCP_SSH_USER }}@${{ steps.get-vm-ip.outputs.vm_ip }} \
           "cd /opt/airflow && docker compose ps"
 
     - name: Cleanup SSH Key
       if: always()
       run: |
-        gcloud compute instances remove-metadata ${{ secrets.GCP_VM_NAME }} \
-          --zone=${{ secrets.GCP_ZONE }} \
+        gcloud compute instances remove-metadata ${{ vars.GCP_VM_INSTANCE_NAME }} \
+          --zone=${{ vars.GCP_REGION_ZONE }} \
           --keys ssh-keys
 
     - name: Deployment Summary

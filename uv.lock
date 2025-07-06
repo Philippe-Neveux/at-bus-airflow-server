@@ -542,7 +542,7 @@ wheels = [
 ]
 
 [[package]]
-name = "at-bus-infrastructure"
+name = "at-bus-airflow-server"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

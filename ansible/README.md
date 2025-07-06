@@ -5,7 +5,7 @@ This directory contains Ansible playbooks and roles for managing the AT Bus infr
 ## 📁 Project Structure
 
 ```
-at-bus-infrastructure/
+at-bus-airflow-server/
 ├── airflow/                    # Airflow application files
 │   ├── dags/                  # Airflow DAGs
 │   ├── plugins/               # Airflow plugins
