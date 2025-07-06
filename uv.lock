@@ -546,7 +546,11 @@ name = "at-bus-airflow-server"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "ansible" },
+    { name = "ruff" },
+]
+
+[package.dev-dependencies]
+airflow = [
     { name = "apache-airflow" },
     { name = "apache-airflow-providers-docker" },
     { name = "apache-airflow-providers-google" },
@@ -554,12 +558,16 @@ dependencies = [
     { name = "dbt-bigquery" },
     { name = "dbt-core" },
     { name = "polars" },
-    { name = "ruff" },
+]
+ansible = [
+    { name = "ansible" },
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "ansible", specifier = ">=11.7.0" },
+requires-dist = [{ name = "ruff", specifier = ">=0.11.11" }]
+
+[package.metadata.requires-dev]
+airflow = [
     { name = "apache-airflow", specifier = "==2.10.5" },
     { name = "apache-airflow-providers-docker", specifier = ">=4.4.0" },
     { name = "apache-airflow-providers-google", specifier = ">=15.1.0" },
@@ -567,8 +575,8 @@ requires-dist = [
     { name = "dbt-bigquery", specifier = ">=1.9.2" },
     { name = "dbt-core", specifier = ">=1.9.8" },
     { name = "polars", specifier = ">=1.30.0" },
-    { name = "ruff", specifier = ">=0.11.11" },
 ]
+ansible = [{ name = "ansible", specifier = ">=11.7.0" }]
 
 [[package]]
 name = "attrs"
@@ -2826,7 +2834,7 @@ wheels = [
 
 [[package]]
 name = "litellm"
-version = "1.73.6.post1"
+version = "1.74.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -2841,9 +2849,9 @@ dependencies = [
     { name = "tiktoken" },
     { name = "tokenizers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b4/99/889207aa89037da4cb381201918e91b6ab74088d401f9a1b8cfd7b5a48e9/litellm-1.73.6.post1.tar.gz", hash = "sha256:cc221818f572fdd64d22b89fa35e6153bfb4f0f755b68eec7da3542767e6a934", size = 8898978, upload-time = "2025-07-04T00:34:43.73Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/24/1f/eb4a931e7bc5fc7ab398df61df75801a0825dcd7edeecf5ccd07d427c36e/litellm-1.74.0.tar.gz", hash = "sha256:2ee64579568cc81835025db45da6d91ee7ec6706ab4adf1a833866999ed822e7", size = 9095626, upload-time = "2025-07-05T05:16:24.576Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a6/34/0068ea25da50072d4f36a78299395afa3b3ed1c475be925fe33f8296c977/litellm-1.73.6.post1-py3-none-any.whl", hash = "sha256:c7a9ac5be16e176a8005e9196446b5c0ead0f08436c12a80920734ce6fa604d4", size = 8467486, upload-time = "2025-07-04T00:34:40.685Z" },
+    { url = "https://files.pythonhosted.org/packages/8b/28/ada87d58dc4dfaf8a1858df712b9c21c3775d6c7d303598e9ab3a57a63cf/litellm-1.74.0-py3-none-any.whl", hash = "sha256:f6c41169e0dbf182c2d74a0b9e146f1c67735351a721c8498eea7ec6306be309", size = 8567304, upload-time = "2025-07-05T05:16:21.993Z" },
 ]
 
 [[package]]

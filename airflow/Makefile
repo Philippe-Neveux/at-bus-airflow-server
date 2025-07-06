@@ -1,5 +1,5 @@
-python_env:
-	uv sync
+python_env_airflow:
+	uv sync --group airflow
 
 ruff_check:
 	ruff check .

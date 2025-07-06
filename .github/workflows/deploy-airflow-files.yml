@@ -141,7 +141,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        uv sync --locked
+        uv sync --locked --group ansible
 
     - name: Install Ansible Collections
       run: |
