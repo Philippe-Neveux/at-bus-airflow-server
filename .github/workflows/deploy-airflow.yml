@@ -238,7 +238,7 @@ jobs:
 
     - name: Copy GCP Credentials
       run: |
-        echo '${{ secrets.GCP_SA_KEY }}' | base64 -d > ansible/files/credentials/airflow-server-key.json
+        echo '${{ secrets.GCP_SA_KEY }}' > ansible/files/credentials/airflow-server-key.json
 
     - name: Run Ansible Playbook
       run: |
