@@ -2,8 +2,8 @@ FROM apache/airflow:2.10.5
 
 ADD https://astral.sh/uv/0.7.9/install.sh /uv-installer.sh
 
-ADD . /app
-ADD ../pyproject.toml /app
+COPY airflow/ /app
+COPY pyproject.toml /app/
 
 WORKDIR /app
 

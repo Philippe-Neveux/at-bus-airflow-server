@@ -33,7 +33,7 @@ The playbook is integrated with the Makefile for easy usage:
 make docker-pull-custom IMAGE=nginx:latest
 
 # Pull from Google Cloud Artifact Registry
-make docker-pull-custom IMAGE=australia-southeast1-docker.pkg.dev/glossy-apex-462002-i3/airflow-images/airflow_with_dep:latest
+make docker-pull-custom IMAGE=australia-southeast1-docker.pkg.dev/at-bus-465401/airflow-images/airflow_with_dep:latest
 ```
 
 ## Authentication

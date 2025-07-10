@@ -10,7 +10,7 @@ import google.auth
 import google.auth.transport.requests
 
 GCP_REGION='australia-southeast1'
-GCP_PROJECT_ID='glossy-apex-462002-i3'
+GCP_PROJECT_ID='at-bus-465401'
 GCP_ARTIFACT_REPOSITORY='python-projects'
 PROJECT_NAME='at-bus-load'
 IMAGE_VERSION="latest"

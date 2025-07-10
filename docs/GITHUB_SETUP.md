@@ -12,7 +12,7 @@ Add the following secrets:
 
 | Secret Name | Description | Example |
 |-------------|-------------|---------|
-| `GCP_PROJECT_ID` | Your Google Cloud Project ID | `glossy-apex-462002-i3` |
+| `GCP_PROJECT_ID` | Your Google Cloud Project ID | `at-bus-465401` |
 | `GCP_SA_KEY` | Base64-encoded service account key JSON | `eyJ0eXBlIjoic2VydmljZV9hY2NvdW50Iiw...` |
 | `GCP_VM_NAME` | Name of your GCP VM instance | `airflow-vm` |
 | `GCP_ZONE` | GCP zone where VM is located | `australia-southeast1-a` |
@@ -109,7 +109,7 @@ Here's an example of what your secrets and variables should look like:
 
 ### Secrets
 ```
-GCP_PROJECT_ID: glossy-apex-462002-i3
+GCP_PROJECT_ID: at-bus-465401
 GCP_SA_KEY: eyJ0eXBlIjoic2VydmljZV9hY2NvdW50IiwiaWQiOiIxMjM0NTY3ODkwIiw...
 GCP_VM_NAME: airflow-production-vm
 GCP_ZONE: australia-southeast1-a

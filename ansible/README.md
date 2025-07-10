@@ -196,27 +196,6 @@ ansible-galaxy collection install -r requirements.yml
 ansible-playbook playbook.yml
 ```
 
-### Clean Deployment Options
-
-The deployment supports two modes for handling existing files:
-
-#### Option 1: Manual Cleanup (Default)
-- **Variable**: `clean_deployment: true` in `inventory/group_vars/airflow_servers.yml`
-- **Behavior**: Removes existing directories before copying new files
-- **Use case**: Ensures only current deployment files exist on the VM
-
-#### Option 2: Synchronize with Delete (Recommended for large directories)
-- **Variable**: `use_synchronize: true` in `inventory/group_vars/airflow_servers.yml`
-- **Behavior**: Uses rsync to synchronize directories with delete option
-- **Use case**: More efficient for large directories, only transfers changed files
-
-#### Configuration Example
-```yaml
-# inventory/group_vars/airflow_servers.yml
-clean_deployment: true    # Remove existing files before copying
-use_synchronize: false    # Use copy module (true = use rsync-based synchronize)
-```
-
 #### Override for Specific Deployments
 ```bash
 # Force clean deployment
