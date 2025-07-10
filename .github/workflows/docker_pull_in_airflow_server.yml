@@ -220,7 +220,7 @@ jobs:
         airflow_uid: 50000
         airflow_project_dir: /opt/airflow
         gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
-        gcp_region: ${{ secrets.GCP_REGION }}
+        gcp_region: ${{ vars.GCP_REGION }}
         image_name: ${{ vars.AIRFLOW_IMAGE_NAME }}
         airflow_admin_username: ${{ secrets.AIRFLOW_ADMIN_USERNAME }}
         airflow_admin_password: ${{ secrets.AIRFLOW_ADMIN_PASSWORD }}

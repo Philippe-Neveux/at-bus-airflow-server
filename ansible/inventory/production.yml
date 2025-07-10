@@ -7,5 +7,5 @@ all:
     airflow_servers:
       hosts:
         airflow-prod:
-          ansible_host: 34.40.187.245
+          ansible_host: 35.244.73.100
           ansible_user: at-bus-airflow-server
