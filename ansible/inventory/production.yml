@@ -8,4 +8,4 @@ all:
       hosts:
         airflow-prod:
           ansible_host: 35.244.73.100
-          ansible_user: at-bus-airflow-server
+          ansible_user: mac

@@ -83,6 +83,14 @@
     group: airflow
     mode: '0600'
 
+- name: Authenticate with Google Cloud service account
+  shell: |
+    gcloud auth activate-service-account --key-file={{ airflow_project_dir }}/credentials/airflow-server-key.json
+  become: yes
+  become_user: airflow
+  register: gcloud_auth_result
+  changed_when: gcloud_auth_result.rc == 0
+
 - name: Connect docker to GCP Artififact repository
   include_role:
     name: docker
