@@ -25,21 +25,11 @@ name: Pull Docker Image in Airflow server
 on:
   workflow_dispatch:
     inputs:
-      environment:
-        description: 'Environment to deploy to'
-        required: true
-        default: 'production'
-        type: choice
-        options:
-        - staging
-        - production
       docker_image_name:
         description: 'Docker image to pull'
         required: true
+        type: string
         default: 'at-bus-load:latest'
-        type: choice
-        options:
-        - at-bus-load:latest
 
 jobs:
   update-submodules:
@@ -205,7 +195,7 @@ jobs:
           children:
             airflow_servers:
               hosts:
-                airflow-${{ github.event.inputs.environment || 'production' }}:
+                airflow-production:
                   ansible_host: ${{ steps.get-vm-ip.outputs.vm_ip }}
                   ansible_user: ${{ vars.GCP_SSH_USER }}
         EOF
