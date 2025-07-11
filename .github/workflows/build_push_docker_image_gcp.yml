@@ -20,6 +20,13 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Export dependencies for Docker build
+        run: |
+          uv export --format requirements.txt --group airflow > requirements.txt
+
       - name: Configure Docker for Artifact Registry
         run: |
           gcloud auth configure-docker ${{ vars.GCP_REGION }}-docker.pkg.dev

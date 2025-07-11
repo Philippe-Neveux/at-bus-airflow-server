@@ -58,16 +58,16 @@ def DAG_at_bus_load_transform():
     )
 
     profile_config = ProfileConfig(
-        profile_name="dbt_at_bus_transform",
+        profile_name="at_bus_transform",
         target_name="dev",
-        profiles_yml_filepath="/opt/airflow/dags/dbt/dbt-at-bus-transform/profiles.yml"
+        profiles_yml_filepath="/opt/airflow/dags/dbt/at-bus-transform/profiles.yml"
     )
     project_config = ProjectConfig(
-        dbt_project_path="/opt/airflow/dags/dbt/dbt-at-bus-transform",
+        dbt_project_path="/opt/airflow/dags/dbt/at-bus-transform",
     )
 
     transform_bq_data = DbtTaskGroup(
-        group_id="dbt_at_bus_transform",
+        group_id="at_bus_transform",
         project_config=project_config,
         profile_config=profile_config,
     )

@@ -1,10 +1,10 @@
 FROM apache/airflow:2.10.5
 
-ADD https://astral.sh/uv/0.7.9/install.sh /uv-installer.sh
+# COPY --from=ghcr.io/astral-sh/uv:0.7.12 /uv /uvx /bin/
 
 COPY airflow/ /app
-COPY pyproject.toml /app/
+COPY requirements.txt /app/
 
 WORKDIR /app
 
-RUN uv pip install -r pyproject.toml
+RUN pip install -r requirements.txt
